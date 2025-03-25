@@ -6,6 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  Header,
+  Redirect,
+  Query,
 } from '@nestjs/common';
 import { UserPocService } from './user-poc.service';
 import { CreateUserPocDto } from './dto/create-user-poc.dto';
@@ -15,6 +19,16 @@ import { UpdateUserPocDto } from './dto/update-user-poc.dto';
 export class UserPocController {
   constructor(private readonly userPocService: UserPocService) {}
 
+  @Get('docs')
+  @Redirect('https://docs.nestjs.com', 302)
+  docs(@Query('version') version) {
+    if (version && version === '5') {
+      return { url: 'https://docs.nestjs.com/v5/' };
+    }
+  }
+
+  @Header('Cache-Control', 'no-store')
+  @HttpCode(201)
   @Post()
   create(@Body() createUserPocDto: CreateUserPocDto) {
     return this.userPocService.create(createUserPocDto);
