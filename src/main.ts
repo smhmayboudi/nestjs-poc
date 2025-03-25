@@ -18,6 +18,7 @@ async function bootstrap() {
   // app.useGlobalPipes(new ValidationPipe());
   // const { httpAdapter } = app.get(HttpAdapterHost);
   // app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+  // app.useGlobalGuards(new RolesGuard());
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

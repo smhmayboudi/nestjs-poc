@@ -27,8 +27,9 @@ import {
 } from './dto/create-user-poc.dto';
 import { UpdateUserPocDto } from './dto/update-user-poc.dto';
 import { Observable, of } from 'rxjs';
-import { HttpExceptionFilter } from 'src/http-exception/http-exception.filter';
-import { ZodValidationPipe } from 'src/zod-validation/zod-validation.pipe';
+import { HttpExceptionFilter } from '../../src/http-exception/http-exception.filter';
+import { ZodValidationPipe } from '../../src/zod-validation/zod-validation.pipe';
+import { Roles } from '../../src/roles/roles.decorator';
 
 class StringToNumber implements PipeTransform<string, number> {
   transform(value: string, metadata: ArgumentMetadata): number {
@@ -73,6 +74,7 @@ export class UserPocController {
   @HttpCode(201)
   @Post()
   @UsePipes(new ZodValidationPipe(createUserPocSchema))
+  @Roles(['admin'])
   create(@Body() createUserPocDto: CreateUserPocDto2) {
     return this.userPocService.create(createUserPocDto);
   }
