@@ -10,11 +10,24 @@ import {
   Header,
   Redirect,
   Query,
+  PipeTransform,
+  ArgumentMetadata,
 } from '@nestjs/common';
 import { UserPocService } from './user-poc.service';
 import { CreateUserPocDto } from './dto/create-user-poc.dto';
 import { UpdateUserPocDto } from './dto/update-user-poc.dto';
 import { Observable, of } from 'rxjs';
+
+class StringToNumber implements PipeTransform<string, number> {
+  transform(value: string, metadata: ArgumentMetadata): number {
+    // console.log('metadata.metatype', metadata.metatype);
+    if (metadata.type === 'query' && metadata.data === 'version') {
+      return Number.parseInt(value, 10);
+    }
+
+    return 0;
+  }
+}
 
 @Controller('user-poc')
 export class UserPocController {
@@ -22,8 +35,8 @@ export class UserPocController {
 
   @Get('docs')
   @Redirect('https://docs.nestjs.com', 302)
-  docs(@Query('version') version) {
-    if (version && version === '5') {
+  docs(@Query('version', StringToNumber) version: number) {
+    if (version && version === 5) {
       return { url: 'https://docs.nestjs.com/v5/' };
     }
   }
