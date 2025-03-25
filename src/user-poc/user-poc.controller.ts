@@ -14,12 +14,21 @@ import {
   ArgumentMetadata,
   UseFilters,
   ForbiddenException,
+  ParseIntPipe,
+  HttpStatus,
+  UsePipes,
+  ValidationPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { UserPocService } from './user-poc.service';
-import { CreateUserPocDto } from './dto/create-user-poc.dto';
+import {
+  CreateUserPocDto2,
+  createUserPocSchema,
+} from './dto/create-user-poc.dto';
 import { UpdateUserPocDto } from './dto/update-user-poc.dto';
 import { Observable, of } from 'rxjs';
 import { HttpExceptionFilter } from 'src/http-exception/http-exception.filter';
+import { ZodValidationPipe } from 'src/zod-validation/zod-validation.pipe';
 
 class StringToNumber implements PipeTransform<string, number> {
   transform(value: string, metadata: ArgumentMetadata): number {
@@ -33,7 +42,6 @@ class StringToNumber implements PipeTransform<string, number> {
 }
 
 @Controller('user-poc')
-@UseFilters(new HttpExceptionFilter())
 export class UserPocController {
   constructor(private readonly userPocService: UserPocService) {}
 
@@ -64,7 +72,8 @@ export class UserPocController {
   @Header('Cache-Control', 'no-store')
   @HttpCode(201)
   @Post()
-  create(@Body() createUserPocDto: CreateUserPocDto) {
+  @UsePipes(new ZodValidationPipe(createUserPocSchema))
+  create(@Body() createUserPocDto: CreateUserPocDto2) {
     return this.userPocService.create(createUserPocDto);
   }
 
@@ -74,17 +83,27 @@ export class UserPocController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userPocService.findOne(+id);
+  findOne(
+    // @Param('id', ParseIntPipe)
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ) {
+    return this.userPocService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserPocDto: UpdateUserPocDto) {
+  update(
+    @Param('id') id: string,
+    @Body(ValidationPipe) updateUserPocDto: UpdateUserPocDto,
+  ) {
     return this.userPocService.update(+id, updateUserPocDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', new DefaultValuePipe(0)) id: string) {
     return this.userPocService.remove(+id);
   }
 }
