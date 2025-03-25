@@ -1,1 +1,3 @@
-export class CreateUserPocDto {}
+export class CreateUserPocDto {
+  fullname: string;
+}
