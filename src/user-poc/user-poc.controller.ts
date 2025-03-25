@@ -19,6 +19,7 @@ import {
   UsePipes,
   ValidationPipe,
   DefaultValuePipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserPocService } from './user-poc.service';
 import {
@@ -30,6 +31,7 @@ import { Observable, of } from 'rxjs';
 import { HttpExceptionFilter } from '../../src/http-exception/http-exception.filter';
 import { ZodValidationPipe } from '../../src/zod-validation/zod-validation.pipe';
 import { Roles } from '../../src/roles/roles.decorator';
+import { LoggingInterceptor } from '../../src/logging/logging.interceptor';
 
 class StringToNumber implements PipeTransform<string, number> {
   transform(value: string, metadata: ArgumentMetadata): number {
@@ -43,6 +45,7 @@ class StringToNumber implements PipeTransform<string, number> {
 }
 
 @Controller('user-poc')
+@UseInterceptors(LoggingInterceptor)
 export class UserPocController {
   constructor(private readonly userPocService: UserPocService) {}
 
