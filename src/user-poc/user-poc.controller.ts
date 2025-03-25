@@ -12,11 +12,14 @@ import {
   Query,
   PipeTransform,
   ArgumentMetadata,
+  UseFilters,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserPocService } from './user-poc.service';
 import { CreateUserPocDto } from './dto/create-user-poc.dto';
 import { UpdateUserPocDto } from './dto/update-user-poc.dto';
 import { Observable, of } from 'rxjs';
+import { HttpExceptionFilter } from 'src/http-exception/http-exception.filter';
 
 class StringToNumber implements PipeTransform<string, number> {
   transform(value: string, metadata: ArgumentMetadata): number {
@@ -30,8 +33,15 @@ class StringToNumber implements PipeTransform<string, number> {
 }
 
 @Controller('user-poc')
+@UseFilters(new HttpExceptionFilter())
 export class UserPocController {
   constructor(private readonly userPocService: UserPocService) {}
+
+  @Get('throw')
+  @UseFilters(new HttpExceptionFilter())
+  throw() {
+    throw new ForbiddenException();
+  }
 
   @Get('docs')
   @Redirect('https://docs.nestjs.com', 302)
