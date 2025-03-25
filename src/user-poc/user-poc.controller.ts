@@ -14,6 +14,7 @@ import {
 import { UserPocService } from './user-poc.service';
 import { CreateUserPocDto } from './dto/create-user-poc.dto';
 import { UpdateUserPocDto } from './dto/update-user-poc.dto';
+import { Observable, of } from 'rxjs';
 
 @Controller('user-poc')
 export class UserPocController {
@@ -25,6 +26,16 @@ export class UserPocController {
     if (version && version === '5') {
       return { url: 'https://docs.nestjs.com/v5/' };
     }
+  }
+
+  @Get('all-promise')
+  allPromise(): Promise<any[]> {
+    return new Promise((resolve) => resolve([]));
+  }
+
+  @Get('all-observable')
+  allObservable(): Observable<any[]> {
+    return of([]);
   }
 
   @Header('Cache-Control', 'no-store')
